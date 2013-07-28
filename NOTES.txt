@@ -1,0 +1,27 @@
+= Rails Thread =
+Put a proxy class in front of Capybara::Driver::Base and Capybara::Driver::Node
+  Capybara:Session#driver is the instance of driver
+  Probably need to create a new driver which is a proxy for another driver
+Proxy class puts method_missing args on MQ to be sent to Driver thread
+Needs to yield to Driver thread and then execute the RackRunner
+RackRunner reads rack requests from a MQ, calling the rack endpoint with those; returns when done
+  This should probably use the rack-test gem? This probably isn't what we want since this simulates a browser
+
+= Driver Thread =
+Reads RPCs off a MQ, calls the commands in the appropriate class, and puts the response on another MQ
+Part of the new driver passed to Capybara
+Should be able to use the Capybara driver of your choice
+How is a Node passed back to the Rails thread? Maybe it's OK for Node queries to go straight through to the webdriver?
+  These could trigger web requests (like a click) that would not be processed... maybe wrap in the Barbecue driver
+  so that the RackRunner is triggered appropriately? That still causes a problem when clicking a link since the
+  webdriver might block... need to think about this some more
+
+= Capybara::Server =
+Rewrite this class entirely
+Should spawn a simple Rack webserver that just take the #call Args and puts them on the MQ
+Needs to block until MQ response is received
+Webserver could be Puma or EventMachine
+
+
+Notes:
+Queue class provided by 'thread' library
