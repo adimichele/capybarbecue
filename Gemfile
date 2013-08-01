@@ -6,6 +6,7 @@ group :development do
   gem "rdoc"
   gem "bundler"
   gem "jeweler"
+  gem "poltergeist"
 end
 
 gem "activesupport"
