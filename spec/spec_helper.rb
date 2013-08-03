@@ -1,6 +1,7 @@
 #$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 #$LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'rspec'
+require 'rr'
 require 'capybara/rspec'
 require 'capybara/poltergeist'
 require 'capybarbecue'
@@ -11,7 +12,8 @@ Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 Capybara.default_driver = :poltergeist
 Capybara.app = TestRackApp.new
+Capybarbecue.activate!
 
 RSpec.configure do |config|
-
+  config.mock_with :rr
 end

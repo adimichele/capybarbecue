@@ -2,6 +2,7 @@ source "http://rubygems.org"
 
 group :development do
   gem "rspec"
+  gem "rr"
   gem "yard"
   gem "rdoc"
   gem "bundler"
