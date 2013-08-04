@@ -42,6 +42,13 @@ describe Capybarbecue::AsyncDelegateClass do
     end
   end
 
+  describe '#respond_to?' do
+    it 'returns @instance#respond_to?' do
+      stub(obj).foo
+      expect(subject).to respond_to :foo
+    end
+  end
+
   context 'when a block is given' do
     subject do
       Capybarbecue::AsyncDelegateClass.new(obj) do

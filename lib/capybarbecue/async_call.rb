@@ -1,12 +1,14 @@
 require 'thread'
 
 class AsyncCall # Asynchronously calls a method
-  DEFAULT_TIMEOUT = 0.5
+  DEFAULT_TIMEOUT = 5.0
   attr_reader :thread
   attr_reader :ready
+  attr_reader :to_s
   alias :ready? :ready
 
   def initialize(obj, method, *args, &block)
+    @obj, @method, @args, @block = obj, method, args, block
     @ready = false
     @response = nil
     @exception = nil
@@ -25,12 +27,23 @@ class AsyncCall # Asynchronously calls a method
       sleep 0.05
     end
     kill! and raise Timeout::Error.new('Timeout expired before response received') unless ready?
-    raise @exception if @exception.present?
+    if @exception.present?
+      # Add the backtrace from this thread to make it useful
+      backtrace = @exception.backtrace + Kernel.caller
+      @exception.set_backtrace(backtrace)
+      raise @exception
+    end
     @response
   end
 
   def kill!
     @thread.kill
+  end
+
+  def to_s
+    s = "#{@obj.class.name}##{@method}(#{@args.map{ |a| a.class.name }.join(', ')})"
+    s += ' { ... }' if @block.present?
+    s
   end
 
   private

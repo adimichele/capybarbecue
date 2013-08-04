@@ -27,8 +27,25 @@ class TestRackApp
             <option value="mercedes" id='mercedes'>Mercedes</option>
             <option value="audi" id='audi'>Audi</option>
           </select>
-          <input type='checkbox' id='checkbox_field' name='checkbox_field' value='raisins'></input>
+          <fieldset id='fieldset1'>
+            <input type='checkbox' id='checkbox_field' name='checkbox_field' value='raisins'></input>
+            <input type='checkbox' id='checkbox_field2' name='checkbox_field2' value='peanuts' checked='1'></input>
+            <input type='radio' id='male' name='sex' value='male'>Male</input>
+            <input type='radio' id='female' name='sex' value='female'>Female</input>
+            <input type='file' id='file_field' name='file_field'></input>
+          </fieldset>
+          <button type="button" name='button1' id='button1' onclick='window.location="/button/1"'>Imma button!</button>
         </form>
+        <table id='table1'>
+          <tr>
+            <td>cell 1,1</td>
+            <td>cell 1,2</td>
+          </tr>
+          <tr>
+            <td>cell 2,1</td>
+            <td>cell 2,2</td>
+          </tr>
+        </table>
         <iframe id='myframe' name='myframe' src='/iframe'>
         </iframe>
       </body>

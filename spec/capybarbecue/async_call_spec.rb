@@ -67,4 +67,19 @@ describe AsyncCall do
       expect{ subject.kill!; sleep 0.01 }.to change{ subject.thread.stop? }.from(false).to(true)
     end
   end
+  describe '#to_s' do
+    let(:obj) { Object.new }
+    let(:method) { :foo }
+    let(:args) { [1, Object.new] }
+    before{ stub(obj).foo.with_any_args }
+    it 'returns the method as a string' do
+      expect(subject.to_s).to eq 'Object#foo(Fixnum, Object)'
+    end
+    context 'with a block' do
+      let(:block){ Proc.new do end }
+      it 'returns the method as a string and indicates a block' do
+        expect(subject.to_s).to eq 'Object#foo(Fixnum, Object) { ... }'
+      end
+    end
+  end
 end

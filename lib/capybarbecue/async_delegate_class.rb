@@ -15,6 +15,10 @@ module Capybarbecue
 
     private
 
+    def respond_to_missing?(method, include_all=false)
+      @instance.respond_to?(method, include_all)
+    end
+
     # Wrap anything that looks like Capybara
     def wrap_response(value)
       if value.class.name.include?('Capybara')
