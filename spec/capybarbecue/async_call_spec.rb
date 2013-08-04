@@ -31,6 +31,15 @@ describe AsyncCall do
     it 'returns the value' do
       expect(subject.wait_for_response).to eq 'Object'
     end
+    context 'with a block' do
+      before do
+        stub(obj).name { sleep 0.3 }
+      end
+      it 'calls the block repeatedly while waiting' do
+        mock(obj).foo.at_least(2)
+        subject.wait_for_response { obj.foo }
+      end
+    end
     context 'when the timeout expires' do
       let(:method){ :test }
       before do

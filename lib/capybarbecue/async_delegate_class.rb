@@ -4,13 +4,12 @@ module Capybarbecue
 
     def initialize(instance, &wait_proc)
       @instance = instance
-      @wait_proc = wait_proc # Called while waiting
+      @wait_proc = wait_proc # Called repeatedly while waiting
     end
 
     def method_missing(method, *args, &block)
       call = AsyncCall.new(@instance, method, *args, &block)
-      @wait_proc.call if @wait_proc
-      wrap_response(call.wait_for_response)
+      wrap_response(call.wait_for_response(&@wait_proc))
     end
 
     private

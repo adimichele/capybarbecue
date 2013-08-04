@@ -21,9 +21,11 @@ class AsyncCall # Asynchronously calls a method
     end
   end
 
+  # If a block is passed, it will be called repeatedly until a response comes in
   def wait_for_response(timeout=DEFAULT_TIMEOUT)
     started_at = Time.now
     while Time.now - started_at < timeout.seconds && !ready?
+      yield if block_given?
       sleep 0.05
     end
     kill! and raise Timeout::Error.new('Timeout expired before response received') unless ready?

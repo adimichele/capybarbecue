@@ -56,8 +56,8 @@ describe Capybarbecue::AsyncDelegateClass do
       end
     end
     it 'runs the block before returning' do
-      mock(obj).wait_func
-      stub(obj).foo
+      mock(obj).wait_func.at_least(2)
+      stub(obj).foo { sleep 0.3 }
       subject.foo
     end
   end
