@@ -26,7 +26,8 @@ class AsyncCall # Asynchronously calls a method
     started_at = Time.now
     while Time.now - started_at < timeout.seconds && !ready?
       yield if block_given?
-      sleep 0.05
+      # It feels dangerous not to sleep here... keep a pulse on this (sleep causes performance problems)
+      Thread.pass
     end
     kill! and raise Timeout::Error.new('Timeout expired before response received') unless ready?
     if @exception.present?

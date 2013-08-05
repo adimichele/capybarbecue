@@ -2,7 +2,7 @@ source "http://rubygems.org"
 
 group :development do
   gem "rspec"
-  gem "rr"
+  gem "rr", require: false
   gem "yard"
   gem "rdoc"
   gem "bundler"

@@ -32,3 +32,6 @@ Queue class provided by 'thread' library
 * Add field to the base node class so we can tell it's a node
 * If return value is a Node then wrap it
 * If return value is enumerable, wrap its Node values via #map
+
+---- TODO ----
+* Raise errors during timeouts if Time is frozen
