@@ -21,7 +21,7 @@ describe Capybarbecue do
     after{ Capybarbecue.deactivate! }
     it 'redefines Capybara#current_session' do
       subject
-      expect(Capybara.current_session).to be_an_instance_of Capybarbecue::AsyncDelegateClass
+      expect(Capybara.current_session).to respond_to :__async_delegate__
       expect(Capybara.current_session.instance).to be Capybara.original_session
     end
     it 'saves old Capybara#current_session Capybara#original_session' do

@@ -19,7 +19,7 @@ describe Capybarbecue::AsyncDelegateClass do
   context 'when the object returned is a Capybara object' do
     before { mock(obj).foo{ Capybara::Driver::Base.new } }
     it 'wraps the return value in AsyncDelegateClass' do
-      expect(subject.foo).to be_an_instance_of Capybarbecue::AsyncDelegateClass
+      expect(subject.foo).to respond_to :__async_delegate__
     end
     context 'when a block is given' do
       subject do
@@ -28,9 +28,10 @@ describe Capybarbecue::AsyncDelegateClass do
         end
       end
       it 'preserves the wait_proc' do
-        mock(obj).wait_func.twice
+        stub(obj).wait_func
         resp = subject.foo
         stub(resp.instance).foo
+        mock(obj).wait_func
         resp.foo
       end
     end
@@ -46,6 +47,22 @@ describe Capybarbecue::AsyncDelegateClass do
     it 'returns @instance#respond_to?' do
       stub(obj).foo
       expect(subject).to respond_to :foo
+    end
+  end
+
+  describe 'instance_methods of object' do
+    let(:obj){ Hash.new }
+    it 'delegates these to the wrapped object' do
+      expect(subject).to be_a Hash
+      expect(subject).to be_a_kind_of Hash
+      expect(subject).to be_an_instance_of Hash
+    end
+  end
+
+  describe '#__async_delegate__' do
+    it 'is defined and returns true' do
+      expect(subject).to respond_to :__async_delegate__
+      expect(subject.__async_delegate__).to be_true
     end
   end
 

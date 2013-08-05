@@ -35,3 +35,4 @@ Queue class provided by 'thread' library
 
 ---- TODO ----
 * Raise errors during timeouts if Time is frozen
+* Change Capybara's wait_until

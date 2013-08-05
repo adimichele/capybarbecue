@@ -111,6 +111,9 @@ describe 'With a real life app', :type => :feature, :capybara_feature => true do
     within 'div#div1' do
       expect(page).to have_css 'div.divclass2'
     end
+    within find('div#div1') do
+      expect(page).to have_css 'div.divclass2'
+    end
     within_fieldset 'fieldset1' do
       expect(page).to have_field 'file_field'
     end
