@@ -12,15 +12,17 @@ end
 require 'rake'
 
 require 'jeweler'
+require './lib/capybarbecue/version'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = "capybarbecue"
   gem.homepage = "http://github.com/adimichele/capybarbecue"
   gem.license = "MIT"
-  gem.summary = %Q{Stabilize your Capybara test suite}
+  gem.summary = %Q{Makes your Capybara test suite work better}
   gem.description = %Q{Makes fundamental changes to Capybara's threading architecture so you can write stable tests with a shared database connection.}
   gem.email = "backflip@gmail.com"
   gem.authors = ["Andrew DiMichele"]
+  gem.version = Capybarbecue::VERSION
   # dependencies defined in Gemfile
 end
 Jeweler::RubygemsDotOrgTasks.new
