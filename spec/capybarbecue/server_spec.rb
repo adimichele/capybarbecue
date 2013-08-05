@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+require 'rack'
 
 describe Capybarbecue::Server do
   let(:app) { Object.new }
@@ -17,6 +18,17 @@ describe Capybarbecue::Server do
       subject.call(request1)
       subject.call(request2)
       subject.handle_requests
+    end
+    context 'when Rack returns a Rack::BodyProxy object' do
+      let(:body){ Rack::BodyProxy.new('body') }
+      before do
+        stub(app).call { [200, {}, body] }
+        subject.call(nil)
+      end
+      it 'closes the BodyProxy' do
+        mock(body).close
+        subject.handle_requests
+      end
     end
   end
   describe '#call' do

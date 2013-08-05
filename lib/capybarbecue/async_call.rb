@@ -1,7 +1,7 @@
 require 'thread'
 
 class AsyncCall # Asynchronously calls a method
-  DEFAULT_TIMEOUT = 5.0
+  DEFAULT_TIMEOUT = 30
   attr_reader :thread
   attr_reader :ready
   attr_reader :to_s
