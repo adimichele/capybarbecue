@@ -2,13 +2,15 @@ module Capybarbecue
   class AsyncDelegateClass
     attr_reader :instance
 
-    def initialize(instance, &wait_proc)
+    def initialize(instance, executer, &wait_proc)
       @instance = instance
+      @executer = executer
       @wait_proc = wait_proc # Called repeatedly while waiting
     end
 
     def method_missing(method, *args, &block)
       call = AsyncCall.new(@instance, method, *args, &block)
+      @executer.execute(call)
       wrap_response(call.wait_for_response(&@wait_proc))
     end
 
@@ -26,13 +28,12 @@ module Capybarbecue
     # Wrap anything that looks like Capybara
     def wrap_response(value)
       if value.class.name.include?('Capybara')
-        AsyncDelegateClass.new(value, &@wait_proc)
+        AsyncDelegateClass.new(value, @executer, &@wait_proc)
       else
         value
       end
     end
-  end
-  class AsyncDelegateClass
+
     ## For instance methods of Object, delegate these to the object we've wrapped
     super_methods = superclass.instance_methods - (instance_methods - superclass.instance_methods)
     super_methods -= [:methods, :__send__, :__id__, :respond_to?] # Don't override these bad boys

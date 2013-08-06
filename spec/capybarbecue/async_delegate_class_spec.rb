@@ -2,7 +2,8 @@ require File.expand_path(File.dirname(__FILE__) + '../../spec_helper')
 
 describe Capybarbecue::AsyncDelegateClass do
   let(:obj){ Object.new }
-  subject{ Capybarbecue::AsyncDelegateClass.new(obj) }
+  let(:executer){ Capybarbecue::AsyncExecuter.new }
+  subject{ Capybarbecue::AsyncDelegateClass.new(obj, executer) }
 
   it 'calls the method on the session asynchronously' do
     mock(obj).foo{ 'cats' }
@@ -23,7 +24,7 @@ describe Capybarbecue::AsyncDelegateClass do
     end
     context 'when a block is given' do
       subject do
-        Capybarbecue::AsyncDelegateClass.new(obj) do
+        Capybarbecue::AsyncDelegateClass.new(obj, executer) do
           obj.wait_func
         end
       end
@@ -68,7 +69,7 @@ describe Capybarbecue::AsyncDelegateClass do
 
   context 'when a block is given' do
     subject do
-      Capybarbecue::AsyncDelegateClass.new(obj) do
+      Capybarbecue::AsyncDelegateClass.new(obj, executer) do
         obj.wait_func
       end
     end

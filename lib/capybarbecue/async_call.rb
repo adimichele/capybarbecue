@@ -2,7 +2,6 @@ require 'thread'
 
 class AsyncCall # Asynchronously calls a method
   DEFAULT_TIMEOUT = 30
-  attr_reader :thread
   attr_reader :ready
   attr_reader :to_s
   alias :ready? :ready
@@ -12,12 +11,13 @@ class AsyncCall # Asynchronously calls a method
     @ready = false
     @response = nil
     @exception = nil
-    @thread = Thread.new do
-      begin
-        respond_with obj.send(method, *args, &block)
-      rescue Exception => e
-        respond_with_exception e
-      end
+  end
+
+  def run
+    begin
+      respond_with @obj.send(@method, *@args, &@block)
+    rescue Exception => e
+      respond_with_exception e
     end
   end
 
@@ -29,7 +29,7 @@ class AsyncCall # Asynchronously calls a method
       # It feels dangerous not to sleep here... keep a pulse on this (sleep causes performance problems)
       Thread.pass
     end
-    kill! and raise Timeout::Error.new('Timeout expired before response received') unless ready?
+    raise Timeout::Error.new('Timeout expired before response received') unless ready?
     if @exception.present?
       # Add the backtrace from this thread to make it useful
       backtrace = @exception.backtrace + Kernel.caller
@@ -37,10 +37,6 @@ class AsyncCall # Asynchronously calls a method
       raise @exception
     end
     @response
-  end
-
-  def kill!
-    @thread.kill
   end
 
   def to_s

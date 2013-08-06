@@ -6,22 +6,15 @@ describe AsyncCall do
   let(:args) { [] }
   let(:block) { nil }
   subject{ AsyncCall.new(obj, method, *args, &block) }
-  after{ subject.kill! }
-  describe '#thread' do
-    it 'should be a thread' do
-      expect(subject.thread).to be_a Thread
-    end
-  end
   describe '#ready' do
     let(:method){ :test }
     before do
       stub(obj).test do
-        sleep 0.1
       end
     end
     it 'should be true once the response is ready' do
       expect(subject).to_not be_ready
-      sleep 0.11
+      subject.run
       expect(subject).to be_ready
     end
   end
@@ -29,28 +22,21 @@ describe AsyncCall do
     let(:obj){ Object }
     let(:method){ :name }
     it 'returns the value' do
+      subject.run
       expect(subject.wait_for_response).to eq 'Object'
     end
     context 'with a block' do
-      before do
-        stub(obj).name { sleep 0.3 }
-      end
       it 'calls the block repeatedly while waiting' do
         mock(obj).foo.at_least(2)
-        subject.wait_for_response { obj.foo }
+        begin
+          subject.wait_for_response(0.5) { obj.foo }
+        rescue Timeout::Error
+        end
       end
     end
     context 'when the timeout expires' do
-      let(:method){ :test }
-      before do
-        stub(obj).test do
-          sleep 1
-        end
-      end
-      it 'raises an error and kills the thread' do
+      it 'raises an error' do
         expect{ subject.wait_for_response(0.01) }.to raise_error Timeout::Error
-        sleep 0.1
-        expect(subject.thread).to_not be_alive
       end
     end
     context 'when the call raises an exception' do
@@ -61,19 +47,9 @@ describe AsyncCall do
         end
       end
       it 'also raises the exception' do
+        subject.run
         expect{ subject.wait_for_response }.to raise_error ZeroDivisionError
       end
-    end
-  end
-  describe '#kill!' do
-    let(:method){ :test }
-    before do
-      stub(obj).test do
-        sleep 1
-      end
-    end
-    it 'kills the thread' do
-      expect{ subject.kill!; sleep 0.01 }.to change{ subject.thread.stop? }.from(false).to(true)
     end
   end
   describe '#to_s' do

@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.email = "backflip@gmail.com"
   s.extra_rdoc_files = [
     "LICENSE.txt",
-    "README.rdoc"
+    "README.md"
   ]
   s.files = [
     ".document",
@@ -23,7 +23,7 @@ Gem::Specification.new do |s|
     "Gemfile.lock",
     "LICENSE.txt",
     "NOTES.txt",
-    "README.rdoc",
+    "README.md",
     "Rakefile",
     "lib/capybarbecue.rb",
     "lib/capybarbecue/async_call.rb",
