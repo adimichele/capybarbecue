@@ -19,8 +19,7 @@ module Capybarbecue
 
     # Should be run by another thread - respond to all queued requests
     def handle_requests
-      # To prevent infinite looping from a fast client, only handle the requests currently in the queue
-      @requestmq.size.times do |i|
+      until @requestmq.empty?
         request = @requestmq.deq(true)
         begin
           request.response = @app.call(request.env)

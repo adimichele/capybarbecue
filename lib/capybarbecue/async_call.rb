@@ -1,6 +1,6 @@
 require 'thread'
 
-class AsyncCall # Asynchronously calls a method
+class AsyncCall
   DEFAULT_TIMEOUT = 30
   attr_reader :ready
   attr_reader :to_s
@@ -13,7 +13,7 @@ class AsyncCall # Asynchronously calls a method
     @exception = nil
   end
 
-  def run
+  def run  # Should be called from the executer
     begin
       respond_with @obj.send(@method, *@args, &@block)
     rescue Exception => e

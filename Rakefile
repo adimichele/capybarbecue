@@ -9,23 +9,8 @@ rescue Bundler::BundlerError => e
   $stderr.puts "Run `bundle install` to install missing gems"
   exit e.status_code
 end
-require 'rake'
 
-require 'jeweler'
-require './lib/capybarbecue/version'
-Jeweler::Tasks.new do |gem|
-  # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
-  gem.name = "capybarbecue"
-  gem.homepage = "http://github.com/adimichele/capybarbecue"
-  gem.license = "MIT"
-  gem.summary = %Q{Makes your Capybara test suite work better}
-  gem.description = %Q{Makes fundamental changes to Capybara's threading architecture so you can write stable tests with a shared database connection.}
-  gem.email = "backflip@gmail.com"
-  gem.authors = ["Andrew DiMichele"]
-  gem.version = Capybarbecue::VERSION
-  # dependencies defined in Gemfile
-end
-Jeweler::RubygemsDotOrgTasks.new
+require 'rake'
 
 require 'rspec/core'
 require 'rspec/core/rake_task'
@@ -42,3 +27,30 @@ task :default => :spec
 
 require 'yard'
 YARD::Rake::YardocTask.new
+
+desc "Start IRB with all runtime dependencies loaded"
+task :console, [:script] do |t,args|
+  dirs = ['ext', 'lib'].select { |dir| File.directory?(dir) }
+
+  original_load_path = $LOAD_PATH
+
+  cmd = if File.exist?('Gemfile')
+          require 'bundler'
+          Bundler.setup(:default)
+        end
+
+  # add the project code directories
+  $LOAD_PATH.unshift(*dirs)
+
+  # clear ARGV so IRB is not confused
+  ARGV.clear
+
+  require 'irb'
+
+  # set the optional script to run
+  IRB.conf[:SCRIPT] = args.script
+  IRB.start
+
+  # return the $LOAD_PATH to it's original state
+  $LOAD_PATH.reject! { |path| !(original_load_path.include?(path)) }
+end
