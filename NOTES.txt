@@ -37,3 +37,5 @@ Queue class provided by 'thread' library
 * Raise errors during timeouts if Time is frozen
 * Change Capybara's wait_until (re-implement wait_until)
 * Make timeouts configurable
+* Add #ajax to DSL - make sure an XHR request is fully processed before returning (and run any other requests that come in)
+  - Could take expected # of XHR requests as argument
