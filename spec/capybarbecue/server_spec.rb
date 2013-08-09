@@ -11,8 +11,8 @@ describe Capybarbecue::Server do
   describe '#handle_requests' do
     before{ subject.wait_for_response = false }
     it 'responds to all queued requests' do
-      request1 = Object.new
-      request2 = Object.new
+      request1 = {}
+      request2 = {}
       mock(app).call(request1)
       mock(app).call(request2)
       subject.call(request1)
@@ -23,7 +23,7 @@ describe Capybarbecue::Server do
       let(:body){ Rack::BodyProxy.new('body') }
       before do
         stub(app).call { [200, {}, body] }
-        subject.call(nil)
+        subject.call({})
       end
       it 'closes the BodyProxy' do
         mock(body).close
@@ -32,6 +32,15 @@ describe Capybarbecue::Server do
     end
   end
   describe '#call' do
+    it 'sets some env properties' do
+      stub(subject).queue_and_wait
+      env = {}
+      subject.call(env)
+      env.keys.should match_array %w{rack.multithread rack.multiprocess rack.run_once}
+      env['rack.multithread'].should be_false
+      env['rack.multiprocess'].should be_false
+      env['rack.run_once'].should be_false
+    end
     context 'when another thread handles the request' do
       before do
         stub(app).call.with_any_args { |arg| arg }
@@ -46,7 +55,8 @@ describe Capybarbecue::Server do
       end
       after { thread.kill }
       it 'gives the response' do
-        expect(subject.call('avacado')).to eq 'avacado'
+        env = {}
+        expect(subject.call(env)).to be env
       end
       context 'when there is an exception' do
         before do
@@ -60,7 +70,7 @@ describe Capybarbecue::Server do
     context 'when the timeout expires' do
       before{ subject.timeout = 0.01 }
       it 'raises an exception' do
-        expect{ subject.call(nil) }.to raise_error Timeout::Error
+        expect{ subject.call({}) }.to raise_error Timeout::Error
       end
     end
   end

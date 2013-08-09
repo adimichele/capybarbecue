@@ -14,6 +14,7 @@ module Capybarbecue
     end
 
     def call(env)
+      env.update({"rack.multithread" => false, "rack.multiprocess" => false, "rack.run_once" => false})
       queue_and_wait(env)
     end
 
@@ -38,19 +39,27 @@ module Capybarbecue
       request = QueuedRequest.new(env)
       @requestmq.enq(request)
       return unless wait_for_response
+      wait_for request
+      check_exception_for request
+      request.response
+    end
+
+    def wait_for(request)
       started_at = Time.now
       while !request.ready? && Time.now - started_at < timeout.seconds
         # It feels dangerous not to sleep here... keep a pulse on this (sleep causes performance problems)
         Thread.pass
       end
       raise Timeout::Error.new('Timeout expired before response received') unless request.ready?
+    end
+
+    def check_exception_for(request)
       if request.exception.present?
         # Add the backtrace from this thread to make it useful
         backtrace = request.exception.backtrace + Kernel.caller
         request.exception.set_backtrace(backtrace)
         raise request.exception
       end
-      request.response
     end
 
     class QueuedRequest
