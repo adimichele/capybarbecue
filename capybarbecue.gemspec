@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
   s.summary = "Makes your Capybara test suite work better"
 
   s.add_runtime_dependency('activesupport')
-  s.add_runtime_dependency('capybara', ["~> 2.1.0"])
+  s.add_runtime_dependency('capybara', ["~> 2"])
 
   s.add_development_dependency('rspec')
   s.add_development_dependency('rr')
